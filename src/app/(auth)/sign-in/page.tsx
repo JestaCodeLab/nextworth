@@ -11,10 +11,12 @@ import { IconInput, PasswordInput } from "@/components/auth/icon-input";
 import { SocialButtons } from "@/components/auth/social-buttons";
 import { apiFetch, ApiError } from "@/lib/api";
 import { onboardingStepPath } from "@/lib/onboarding";
+import { useSession } from "@/hooks/use-session";
 import type { SessionUser } from "@/lib/types";
 
 export default function SignInPage() {
   const router = useRouter();
+  const { refresh } = useSession();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [submitting, setSubmitting] = useState(false);
@@ -31,7 +33,14 @@ export default function SignInPage() {
         method: "POST",
         body: JSON.stringify({ email, password }),
       });
-      router.push(onboardingStepPath(user.onboardingStep));
+      await refresh();
+      if (user.role === "admin") {
+        router.push("/admin");
+      } else if (user.role === "merchant") {
+        router.push(user.merchantContactVerified ? "/merchant/redeem" : "/merchant-verify-contact");
+      } else {
+        router.push(onboardingStepPath(user.onboardingStep));
+      }
     } catch (err) {
       toast.error(err instanceof ApiError ? err.message : "Something went wrong. Please try again.");
     } finally {
@@ -85,6 +94,12 @@ export default function SignInPage() {
         Don&apos;t have an account?{" "}
         <Link href="/sign-up" className="font-medium text-primary hover:underline">
           Sign up
+        </Link>
+      </p>
+      <p className="mt-2 text-center text-sm text-muted-foreground">
+        Own a business?{" "}
+        <Link href="/merchant-signup" className="font-medium text-primary hover:underline">
+          Register as a merchant
         </Link>
       </p>
     </div>

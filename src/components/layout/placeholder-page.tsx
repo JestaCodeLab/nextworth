@@ -11,7 +11,7 @@ interface PlaceholderPageProps {
 
 export function PlaceholderPage({ icon: Icon, title, description, comingSoon }: PlaceholderPageProps) {
   return (
-    <div className="mx-auto max-w-3xl">
+    <div className="mx-auto max-w-8xl">
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight">{title}</h1>

@@ -3,7 +3,7 @@ import { Card, CardHeader, CardTitle, CardDescription } from "@/components/ui/ca
 
 export default function SupportPage() {
   return (
-    <div className="mx-auto max-w-3xl space-y-6">
+    <div className="mx-auto max-w-8xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Support</h1>
         <p className="mt-1 text-sm text-muted-foreground">We&apos;re here to help. Get quick answers or contact our support team.</p>

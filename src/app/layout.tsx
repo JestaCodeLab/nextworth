@@ -4,6 +4,8 @@ import "react-toastify/dist/ReactToastify.css";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
 import { ThemeToastContainer } from "@/components/theme-toast-container";
+import { SessionExpiryModal } from "@/components/session-expiry-modal";
+import { SessionProvider } from "@/hooks/use-session";
 
 const rethinkSans = Rethink_Sans({
   variable: "--font-rethink-sans",
@@ -29,8 +31,11 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
     >
       <body className="min-h-full flex flex-col">
         <ThemeProvider>
-          {children}
-          <ThemeToastContainer />
+          <SessionProvider>
+            {children}
+            <ThemeToastContainer />
+            <SessionExpiryModal />
+          </SessionProvider>
         </ThemeProvider>
       </body>
     </html>

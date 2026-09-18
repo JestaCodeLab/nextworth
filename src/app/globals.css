@@ -90,23 +90,23 @@
 }
 
 .dark {
-  --background: oklch(0.145 0 0);
+  --background: oklch(0.19 0 0);
   --foreground: oklch(0.985 0 0);
-  --card: oklch(0.205 0 0);
+  --card: oklch(0.24 0 0);
   --card-foreground: oklch(0.985 0 0);
-  --popover: oklch(0.205 0 0);
+  --popover: oklch(0.24 0 0);
   --popover-foreground: oklch(0.985 0 0);
   --primary: oklch(0.606 0.25 292.717);
   --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.269 0 0);
+  --secondary: oklch(0.29 0 0);
   --secondary-foreground: oklch(0.985 0 0);
-  --muted: oklch(0.269 0 0);
+  --muted: oklch(0.29 0 0);
   --muted-foreground: oklch(0.708 0 0);
-  --accent: oklch(0.32 0.08 293);
+  --accent: oklch(0.34 0.08 293);
   --accent-foreground: oklch(0.894 0.057 293.283);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  --border: oklch(1 0 0 / 12%);
+  --input: oklch(1 0 0 / 16%);
   --ring: oklch(0.702 0.183 293.541);
   --success: oklch(0.723 0.219 149.579);
   --success-foreground: oklch(0.985 0 0);
@@ -116,13 +116,13 @@
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --sidebar: oklch(0.205 0 0);
+  --sidebar: oklch(0.24 0 0);
   --sidebar-foreground: oklch(0.985 0 0);
   --sidebar-primary: oklch(0.488 0.243 264.376);
   --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent: oklch(0.29 0 0);
   --sidebar-accent-foreground: oklch(0.985 0 0);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(1 0 0 / 12%);
   --sidebar-ring: oklch(0.556 0 0);
 }
 
@@ -138,23 +138,21 @@
   }
 }
 
-/* Toast redesign — a solid card with a filled icon circle and a soft
-   per-type color glow, matching the reference design exactly rather than
-   react-toastify's dated pill icons, hairline border, and full-bleed
-   progress strip. Colors reference the real :root/.dark custom properties
-   above (not the @theme inline aliases, which don't resolve outside
-   Tailwind's own utility generation). The icon circle is swapped for a
-   custom component in theme-toast-container.tsx — this block handles the
-   surrounding card chrome. */
+/* Toast redesign — flat solid card matching the rest of the app's design
+   language (Card's own ring-1 ring-foreground/10 border, no heavy shadow,
+   no gradient wash), with a colored left accent bar per status so a toast
+   reads at a glance without needing to parse the icon. The icon is a soft
+   tinted rounded badge, same pattern as the colored icon tiles on dashboard
+   stat cards, swapped in via a custom component in
+   theme-toast-container.tsx — this block handles the surrounding card
+   chrome. Font family is forced to Rethink Sans (with !important, since
+   react-toastify's own injected stylesheet otherwise wins the cascade). */
 :root {
-  --toastify-font-family: "Rethink Sans", "Rethink Sans Fallback", ui-sans-serif, system-ui, sans-serif;
-  --toastify-toast-width: 400px;
-  --toastify-toast-min-height: 84px;
-  --toastify-toast-bd-radius: 22px;
-  --toastify-toast-padding: 20px;
-  --toastify-toast-shadow:
-    0 20px 45px -18px rgb(0 0 0 / 0.18),
-    0 8px 20px -10px rgb(0 0 0 / 0.12);
+  --toastify-toast-width: 420px;
+  --toastify-toast-min-height: 80px;
+  --toastify-toast-bd-radius: calc(var(--radius) * 1.4);
+  --toastify-toast-padding: 16px 16px 16px 14px;
+  --toastify-toast-shadow: 0 8px 24px -8px rgb(0 0 0 / 0.12);
   /* --card/--card-foreground already flip correctly between :root and
      .dark, so a single assignment here covers both themes. */
   --toastify-toast-background: var(--card);
@@ -163,22 +161,39 @@
 }
 
 .dark {
-  --toastify-toast-shadow:
-    0 24px 48px -14px rgb(0 0 0 / 0.55),
-    0 8px 24px -10px rgb(0 0 0 / 0.4);
+  --toastify-toast-shadow: 0 8px 28px -8px rgb(0 0 0 / 0.45);
 }
 
 .Toastify__toast {
-  font-family: var(--toastify-font-family);
+  font-family: "Rethink Sans", "Rethink Sans Fallback", ui-sans-serif, system-ui, sans-serif !important;
+  border: 1px solid color-mix(in oklch, var(--foreground) 10%, transparent);
+  border-left-width: 4px;
+  border-left-color: var(--primary);
+}
+
+.Toastify__toast--success {
+  border-left-color: var(--success);
+}
+
+.Toastify__toast--error {
+  border-left-color: var(--destructive);
+}
+
+.Toastify__toast--warning {
+  border-left-color: var(--warning);
+}
+
+.Toastify__toast--info {
+  border-left-color: var(--primary);
 }
 
 .Toastify__toast-body {
-  gap: 16px;
+  gap: 20px;
   padding: 0;
   align-items: center;
-  font-family: var(--toastify-font-family);
-  font-size: 0.95rem;
-  font-weight: 700;
+  font-family: "Rethink Sans", "Rethink Sans Fallback", ui-sans-serif, system-ui, sans-serif !important;
+  font-size: 1rem;
+  font-weight: 600;
   line-height: 1.35;
   color: var(--card-foreground);
 }
@@ -186,23 +201,4 @@
 .Toastify__toast-icon {
   width: auto;
   margin-inline-end: 0;
-}
-
-/* Soft color wash behind the icon, per toast type — layered under the
-   solid card background rather than replacing it. */
-.Toastify__toast--success {
-  background: radial-gradient(160px 120px at 15% 20%, color-mix(in oklch, var(--success) 22%, transparent), transparent 70%), var(--card);
-}
-
-.Toastify__toast--warning {
-  background: radial-gradient(160px 120px at 15% 20%, color-mix(in oklch, var(--warning) 22%, transparent), transparent 70%), var(--card);
-}
-
-.Toastify__toast--error {
-  background: radial-gradient(160px 120px at 15% 20%, color-mix(in oklch, var(--destructive) 22%, transparent), transparent 70%), var(--card);
-}
-
-.Toastify__toast--info,
-.Toastify__toast--default {
-  background: radial-gradient(160px 120px at 15% 20%, color-mix(in oklch, var(--primary) 20%, transparent), transparent 70%), var(--card);
 }

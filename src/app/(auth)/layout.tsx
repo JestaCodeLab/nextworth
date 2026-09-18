@@ -12,7 +12,23 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { ThemeToggle } from "@/components/theme-toggle";
-import { ShieldCheck, Tag, Globe2, Lock, Mail, ShieldQuestion, Clock, Headset } from "lucide-react";
+import { useMounted } from "@/hooks/use-mounted";
+import {
+  ShieldCheck,
+  Tag,
+  Globe2,
+  Lock,
+  Mail,
+  ShieldQuestion,
+  Clock,
+  Headset,
+  Users,
+  Store,
+  Receipt,
+  Percent,
+  MapPin,
+  Smartphone,
+} from "lucide-react";
 
 interface Highlight {
   icon: LucideIcon;
@@ -50,6 +66,21 @@ const panelContent: Record<string, { badge?: string; heading: React.ReactNode; b
       { icon: Lock, title: "Secure & Private", body: "Your data is protected with industry-leading security." },
     ],
   },
+  "/admin-login": {
+    badge: "Nexworth admin console",
+    heading: (
+      <>
+        Manage Nexworth. <span className="text-violet-400">Securely.</span>
+      </>
+    ),
+    body: "Review KYC applications, onboard merchants, track transactions, and manage market pricing.",
+    highlights: [
+      { icon: Users, title: "User Review", body: "Approve or reject identity verification." },
+      { icon: Store, title: "Merchant Onboarding", body: "Add and manage participating merchants." },
+      { icon: Receipt, title: "Transactions", body: "See every card-fee payment, confirmed by Paystack." },
+      { icon: Lock, title: "Restricted Access", body: "Admin accounts only." },
+    ],
+  },
   "/forgot-password": {
     heading: (
       <>
@@ -62,6 +93,49 @@ const panelContent: Record<string, { badge?: string; heading: React.ReactNode; b
       { icon: ShieldQuestion, title: "Your Account, Safe", body: "We use industry-leading security to protect you." },
       { icon: Clock, title: "24/7 Access", body: "Reset anytime, anywhere, and get back in instantly." },
       { icon: Headset, title: "Need Help?", body: "Our support team is always here for you." },
+    ],
+  },
+  "/merchant-signup": {
+    badge: "Become a Nexworth partner",
+    heading: (
+      <>
+        Reach verified members. <span className="text-violet-400">Grow your business.</span>
+      </>
+    ),
+    body: "Register your business, set the discount you're offering, and get discovered by Nexworth members across Ghana and the UK.",
+    highlights: [
+      { icon: Percent, title: "You set the discount", body: "Offer whatever percentage works for your business." },
+      { icon: Users, title: "Verified members", body: "Every member is identity-verified before they can join." },
+      { icon: MapPin, title: "Get discovered", body: "Show up on Find Merchants once your listing is approved." },
+      { icon: ShieldCheck, title: "Quick review", body: "Our team reviews new listings before they go live." },
+    ],
+  },
+  "/merchant-verify-contact": {
+    badge: "Almost there",
+    heading: (
+      <>
+        Confirm it&apos;s you. <span className="text-violet-400">Then step inside.</span>
+      </>
+    ),
+    body: "A quick code by text or email confirms you own the contact details on file before you enter your portal.",
+    highlights: [
+      { icon: ShieldCheck, title: "One-time code", body: "Expires in 10 minutes for your security." },
+      { icon: Smartphone, title: "Your choice", body: "Verify by text or email — whichever's easiest." },
+      { icon: Lock, title: "Secure & Private", body: "Your data is protected with industry-leading security." },
+    ],
+  },
+  "/reset-password": {
+    heading: (
+      <>
+        Almost there. <span className="text-violet-400">Set your password.</span>
+      </>
+    ),
+    body: "Choose a password to activate your Nexworth account and get started.",
+    highlights: [
+      { icon: ShieldCheck, title: "Verified Access", body: "Your credential. Your identity. Verified." },
+      { icon: Tag, title: "Exclusive Benefits", body: "Enjoy discounts and privileges every day." },
+      { icon: Globe2, title: "Wide Network", body: "Access merchants across Ghana & the UK." },
+      { icon: Lock, title: "Secure & Private", body: "Your data is protected with industry-leading security." },
     ],
   },
 };
@@ -78,7 +152,7 @@ function HeaderRight({ pathname }: { pathname: string }) {
     );
   }
 
-  if (pathname === "/forgot-password") {
+  if (pathname === "/forgot-password" || pathname === "/admin-login") {
     return (
       <Link href="/sign-in" className="flex items-center gap-1.5 text-sm font-medium text-primary hover:underline">
         <ArrowLeft className="h-4 w-4" />
@@ -105,12 +179,10 @@ function HeaderRight({ pathname }: { pathname: string }) {
 export default function AuthLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const content = panelContent[pathname] ?? panelContent["/sign-in"];
-  // next-themes returns resolvedTheme as undefined until mounted client-side,
-  // which conveniently defaults us to the blue (light-mode) logo on the
-  // server/first paint — matching defaultTheme="light" with no hydration mismatch.
   const { resolvedTheme } = useTheme();
+  const mounted = useMounted();
   const logoSrc =
-    resolvedTheme === "dark"
+    mounted && resolvedTheme === "dark"
       ? "/nexworth_brand_logos/nexworth-logo-white.png"
       : "/nexworth_brand_logos/nexworth-logo-blue.png";
 

@@ -1,12 +1,32 @@
 "use client";
 
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
+import dynamic from "next/dynamic";
 import { MapPin, Tag, Receipt, Bell } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Skeleton } from "@/components/ui/skeleton";
 import { CredentialCard } from "@/components/credential/credential-card";
 import { AccessStatusCard } from "@/components/dashboard/access-status-card";
 import { useSession } from "@/hooks/use-session";
 import { useCredential } from "@/hooks/use-credential";
+import { apiFetch } from "@/lib/api";
+import { MARKET_DEFAULT_VIEW } from "@/lib/city-coordinates";
+import type { MapMerchant } from "@/components/find-merchants/merchants-map";
+
+const MerchantsMap = dynamic(() => import("@/components/find-merchants/merchants-map").then((m) => m.MerchantsMap), {
+  ssr: false,
+  loading: () => <Skeleton className="h-full min-h-80 w-full rounded-xl" />,
+});
+
+interface DashboardMerchant {
+  id: string;
+  name: string;
+  category: string;
+  country: "GH" | "UK";
+  discountPercent?: number;
+  locations: { city?: string }[];
+}
 
 const quickActions = [
   { label: "Find Merchants", icon: MapPin, href: "/find-merchants" },
@@ -17,11 +37,33 @@ const quickActions = [
 
 export default function DashboardPage() {
   const { user } = useSession();
-  const { credential } = useCredential();
+  const { credential, loading: credentialLoading } = useCredential();
+  const [merchants, setMerchants] = useState<DashboardMerchant[] | null>(null);
+
+  useEffect(() => {
+    apiFetch<{ merchants: DashboardMerchant[] }>("/merchants")
+      .then((data) => setMerchants(data.merchants))
+      .catch(() => setMerchants([]));
+  }, []);
+
+  const nearbyMerchants: MapMerchant[] = useMemo(() => {
+    if (!merchants || !user?.country) return [];
+    return merchants
+      .filter((m) => m.country === user.country && m.locations[0]?.city)
+      .map((m) => ({
+        id: m.id,
+        name: m.name,
+        category: m.category,
+        discountPercent: m.discountPercent,
+        city: m.locations[0]!.city!,
+        country: m.country,
+      }));
+  }, [merchants, user]);
+
   if (!user) return null;
 
   return (
-    <div className="mx-auto max-w-6xl space-y-6">
+    <div className="mx-auto max-w-8xl space-y-6">
       <div>
         <h1 className="text-2xl font-bold tracking-tight">Welcome back, {user.name.split(" ")[0]} 👋</h1>
         <p className="mt-1 text-sm text-muted-foreground">
@@ -71,36 +113,29 @@ export default function DashboardPage() {
           </Card>
         </div>
 
-        <div className="space-y-6">
-          <AccessStatusCard credential={credential} />
+        <div className="flex flex-col gap-6">
+          <AccessStatusCard credential={credential} userStatus={user.status} loading={credentialLoading} />
 
-          <Card>
+          <Card className="flex flex-1 flex-col">
             <CardHeader className="flex flex-row items-center justify-between">
               <CardTitle className="text-base">Nearby Merchants</CardTitle>
               <Link href="/find-merchants" className="text-sm font-medium text-primary hover:underline">
                 View all
               </Link>
             </CardHeader>
-            <CardContent className="flex flex-col items-center gap-2 py-8 text-center">
-              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-accent text-accent-foreground">
-                <MapPin className="h-5 w-5" />
-              </div>
-              <p className="max-w-xs text-sm text-muted-foreground">
-                The merchant map isn&apos;t live yet — check back soon.
-              </p>
-            </CardContent>
-          </Card>
-
-          <Card className="overflow-hidden bg-[#0f0a2e] text-white">
-            <CardContent className="p-5">
-              <p className="font-semibold">Unlock more savings</p>
-              <p className="mt-1 text-sm text-white/70">New partners. More benefits. Better opportunities for you.</p>
-              <Link
-                href="/benefits"
-                className="mt-4 inline-block rounded-lg bg-white px-4 py-2 text-sm font-semibold text-[#0f0a2e] transition-opacity hover:opacity-90"
-              >
-                Explore Benefits
-              </Link>
+            <CardContent className="flex-1">
+              {!merchants ? (
+                <Skeleton className="h-full min-h-80 w-full rounded-xl" />
+              ) : (
+                <div className="h-full min-h-80">
+                  <MerchantsMap
+                    merchants={nearbyMerchants}
+                    defaultCenter={user.country ? MARKET_DEFAULT_VIEW[user.country] : undefined}
+                    defaultZoom={user.country ? 13 : undefined}
+                    lockToDefaultView={Boolean(user.country)}
+                  />
+                </div>
+              )}
             </CardContent>
           </Card>
         </div>

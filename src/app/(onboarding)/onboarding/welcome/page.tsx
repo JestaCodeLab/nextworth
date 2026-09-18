@@ -10,7 +10,6 @@ import { apiFetch, ApiError } from "@/lib/api";
 import { useSession } from "@/hooks/use-session";
 
 const benefits = [
-  { icon: ShieldCheck, title: "Verified Access", body: "Your identity is verified once — no re-checking at every merchant." },
   { icon: Tag, title: "Exclusive Benefits", body: "Discounts and privileges from participating merchants." },
   { icon: Globe2, title: "Wide Network", body: "Accepted across Ghana and the UK, with more markets to come." },
   { icon: Lock, title: "Secure & Private", body: "Your documents and data are encrypted and never shown publicly." },
@@ -52,14 +51,12 @@ export default function OnboardingWelcomePage() {
           <div>
             <p className="font-semibold">Documents received — under review</p>
             <p className="mt-1 text-sm text-muted-foreground">
-              Your photo and ID have been submitted and are with a Nexworth admin for manual verification. This
-              isn&apos;t automatic, so it can take a little time — we&apos;ll notify you the moment your credential
-              is approved and issued. Feel free to explore your dashboard while you wait.
+              Your photo and ID have been successfully submitted! Your information is now being reviewed, and we’ll notify you as soon as your credential is approved and issued. In the meantime, feel free to explore your dashboard.
             </p>
           </div>
         </div>
 
-        <div className="grid gap-4 sm:grid-cols-2">
+        <div className="grid gap-4 sm:grid-cols-1">
           {benefits.map(({ icon: Icon, title, body }) => (
             <div key={title} className="flex items-start gap-3">
               <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-accent text-accent-foreground">

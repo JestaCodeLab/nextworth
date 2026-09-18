@@ -11,7 +11,7 @@ type VerificationResult = "valid" | "suspended" | "expired" | "invalid";
 interface VerifyResponse {
   result: VerificationResult;
   holder: { name: string; photoUrl: string | null };
-  credential: { status: string; expiresAt: string };
+  credential: { status: string; expiresAt?: string };
 }
 
 const resultCopy: Record<VerificationResult, { label: string; tone: string; icon: typeof ShieldCheck }> = {
@@ -72,7 +72,9 @@ export default function VerifyPage({ params }: { params: Promise<{ credentialId:
               {resultCopy[data.result].label}
             </div>
             <h1 className="mt-3 text-lg font-semibold">{data.holder.name}</h1>
-            <p className="mt-1 text-sm text-muted-foreground">Expires {formatDate(data.credential.expiresAt)}</p>
+            <p className="mt-1 text-sm text-muted-foreground">
+              {data.credential.expiresAt ? `Expires ${formatDate(data.credential.expiresAt)}` : "Not yet activated"}
+            </p>
           </>
         )}
       </div>

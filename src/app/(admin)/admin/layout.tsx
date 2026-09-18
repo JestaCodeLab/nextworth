@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Sidebar } from "@/components/layout/sidebar";
 import { Topbar } from "@/components/layout/topbar";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/page-loader";
 import { useSession } from "@/hooks/use-session";
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
@@ -23,19 +23,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   }, [loading, user, router]);
 
   if (loading || !user || user.role !== "admin") {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Skeleton className="h-10 w-10 rounded-full" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   return (
-    <div className="flex">
+    <div className="flex h-screen overflow-hidden">
       <Sidebar variant="admin" />
-      <div className="flex min-h-screen flex-1 flex-col">
+      <div className="flex flex-1 flex-col overflow-hidden">
         <Topbar user={user} />
-        <main className="flex-1 bg-muted/30 p-8">{children}</main>
+        <main className="flex-1 overflow-y-auto bg-muted/30 p-8">{children}</main>
       </div>
     </div>
   );

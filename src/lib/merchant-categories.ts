@@ -1,0 +1,16 @@
+export const MERCHANT_CATEGORIES = [
+  "Restaurant",
+  "Grocery & Supermarket",
+  "Retail & Shopping",
+  "Fashion & Apparel",
+  "Beauty & Spa",
+  "Health & Wellness",
+  "Fitness & Gym",
+  "Entertainment & Leisure",
+  "Travel & Hospitality",
+  "Electronics & Tech",
+  "Automotive",
+  "Education",
+  "Home & Furniture",
+  "Other",
+] as const;

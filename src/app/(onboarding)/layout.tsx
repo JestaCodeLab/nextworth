@@ -3,7 +3,7 @@
 import { useEffect } from "react";
 import Image from "next/image";
 import { usePathname, useRouter } from "next/navigation";
-import { Skeleton } from "@/components/ui/skeleton";
+import { PageLoader } from "@/components/page-loader";
 import { useSession } from "@/hooks/use-session";
 import { onboardingStepPath } from "@/lib/onboarding";
 import { cn } from "@/lib/utils";
@@ -33,11 +33,7 @@ export default function OnboardingLayout({ children }: { children: React.ReactNo
   }, [loading, user, pathname, router]);
 
   if (loading || !user || user.onboardingStep === "complete") {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Skeleton className="h-10 w-10 rounded-full" />
-      </div>
-    );
+    return <PageLoader />;
   }
 
   const activeIndex = steps.findIndex((s) => s.key === user.onboardingStep);
